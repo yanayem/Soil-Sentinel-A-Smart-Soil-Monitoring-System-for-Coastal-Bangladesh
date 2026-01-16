@@ -9,7 +9,6 @@ from django.utils import timezone
 # ------------------------
 # Django setup
 # ------------------------
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_DIR)
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soilcore.settings")
@@ -42,56 +41,74 @@ device, created = Device.objects.get_or_create(
     name="My Soil Sensor",
     defaults={"user": user, "is_active": True}
 )
-print(f"📡 Reading data from device: {device.name} (Ctrl+C to stop)")
+
+print(f"📡 Reading data from device: {device.name}")
+print("⏱️ Saving data every 45 seconds (Ctrl+C to stop)")
 
 # ------------------------
-# Rolling average buffer for smoothing raw values
+# Settings
 # ------------------------
-BUFFER_SIZE = 5
+READ_INTERVAL_SECONDS = 15      # 🔥 READ & SAVE EVERY 15 SECONDS
+BUFFER_SIZE = 5                 # rolling average buffer
+
 raw_buffer = deque(maxlen=BUFFER_SIZE)
 
 # ------------------------
-# Read and save loop
+# Read & Save Loop
 # ------------------------
 try:
     while True:
-        try:
-            line = ser.readline().decode('utf-8').strip()
-        except Exception:
-            continue
+        start_time = time.time()
 
-        if not line:
-            continue
-
-        try:
-            clean = line.replace("%", "").strip()
-            first_part = clean.split(",")[0].strip()
-            if not first_part.replace('.', '', 1).isdigit():
+        # Collect data for smoothing
+        while time.time() - start_time < READ_INTERVAL_SECONDS:
+            try:
+                line = ser.readline().decode("utf-8").strip()
+            except Exception:
                 continue
-            raw_value = float(first_part)
-        except Exception:
+
+            if not line:
+                continue
+
+            try:
+                clean = line.replace("%", "").strip()
+                first_part = clean.split(",")[0].strip()
+
+                if not first_part.replace(".", "", 1).isdigit():
+                    continue
+
+                raw_value = float(first_part)
+                raw_buffer.append(raw_value)
+
+            except Exception:
+                continue
+
+            time.sleep(0.2)  # small delay to avoid CPU overuse
+
+        if not raw_buffer:
+            print("⚠️ No data received in last 45 seconds")
             continue
 
-        raw_buffer.append(raw_value)
         smooth_raw = round(sum(raw_buffer) / len(raw_buffer), 2)
+        current_time = timezone.now()
 
         try:
-            reading = DeviceReading.objects.create(
+            DeviceReading.objects.create(
                 device=device,
-                moisture=smooth_raw, 
-                updated_at=timezone.now()
+                moisture=smooth_raw,
+                updated_at=current_time
             )
-            print(f"💾 Saved: Raw={smooth_raw} (latest={raw_value})")
+            print(
+                f"💾 Saved at {current_time.strftime('%H:%M:%S')} | "
+                f"Moisture={smooth_raw}"
+            )
         except Exception as e:
-            print(f"⚠️ Could not save reading: {e}")
-            continue
-
-        time.sleep(0.5)
+            print(f"⚠️ Database save failed: {e}")
 
 except KeyboardInterrupt:
-    print("\n🛑 Stopped by user.")
+    print("\n🛑 Stopped by user")
 
 finally:
-    if 'ser' in locals() and ser.is_open:
+    if ser.is_open:
         ser.close()
-        print("🔌 Serial connection closed.")
+        print("🔌 Serial connection closed")

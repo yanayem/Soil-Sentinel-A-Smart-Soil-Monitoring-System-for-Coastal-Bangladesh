@@ -1,44 +1,62 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="transition-colors duration-500">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Soil Monitor</title>
+
+  <!-- Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config = { darkMode: 'class' }</script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+
+  <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 </head>
-<body class="transition-colors duration-500 bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
 
-<!-- Top Bar -->
-<header class="fixed top-0 left-0 w-full bg-white dark:bg-[#27374d] shadow-2xl z-50 transition-all">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
+
+<!-- ================= TOP BAR ================= -->
+<header class="fixed top-0 left-0 w-full bg-white dark:bg-[#27374d] shadow-xl z-50">
+  <div class="max-w-7xl mx-auto px-4">
     <div class="flex justify-between items-center h-16">
 
-      <!-- Left: Logo + Mobile Menu -->
-      <div class="flex items-center space-x-2">
-        <button id="mobileMenuBtn" class="md:hidden px-4 transition transform hover:-translate-y-0.5">
-          <i class="fas fa-bars text-gray-900 dark:text-white text-lg"></i>
+      <!-- Logo -->
+      <div class="flex items-center gap-2">
+        <button id="mobileMenuBtn" class="md:hidden p-2">
+          <i class="fas fa-bars text-lg"></i>
         </button>
-        <img src="{% static 'media/logo.png' %}" alt="Logo" class="h-12 w-12 rounded-full shadow-lg">
-        <span class="inline text-2xl font-bold text-blue-600 dark:text-blue-400">Soil Monitor</span>
+
+        <img src="{% static 'media/logo.png' %}" class="h-12 w-12 rounded-full" alt="Logo">
+        <span class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+          Soil Monitor
+        </span>
       </div>
 
-      <!-- Right: Theme Toggle + User Info -->
-      <div class="flex items-center space-x-4">
+      <!-- Right -->
+      <div class="flex items-center gap-4">
 
         <!-- Theme Toggle -->
-        <button id="themeToggle" class="p-2 transition transform hover:-translate-y-0.5">
+        <button id="themeToggle" class="p-2">
           <i id="themeIcon" class="fas fa-sun text-yellow-400 text-lg"></i>
         </button>
 
-        <!-- User Profile -->
-        <div class="flex items-center space-x-2 bg-white dark:bg-gray-700 rounded-full shadow-md px-2 py-1 hover:shadow-xl transition transform hover:-translate-y-0.5 cursor-pointer">
-          <img src="{% if global_profile.profile_pic and global_profile.profile_pic.name %}{{ global_profile.profile_pic.url }}{% else %}https://www.w3schools.com/howto/img_avatar.png{% endif %}"
-              alt="Profile Pic"
-              class="h-10 w-10 rounded-full object-cover border-2 border-blue-500 shadow-md">
-          <span class="font-medium text-gray-900 dark:text-gray-100">{{ global_profile.user.first_name }} {{ global_profile.user.last_name }}</span>
+        <!-- User -->
+        <div class="flex items-center gap-2 bg-white dark:bg-gray-700 px-3 py-1 rounded-full shadow">
+          <img
+            src="{% if global_profile.profile_pic and global_profile.profile_pic.name %}
+              {{ global_profile.profile_pic.url }}
+            {% else %}
+              https://www.w3schools.com/howto/img_avatar.png
+            {% endif %}"
+            class="h-10 w-10 rounded-full border-2 border-blue-500 object-cover"
+            alt="Profile">
+
+          <span class="font-medium">
+            {{ global_profile.user.first_name }} {{ global_profile.user.last_name }}
+          </span>
         </div>
 
       </div>
@@ -46,71 +64,89 @@
   </div>
 </header>
 
-<!-- Sidebar -->
-<aside id="sidebarMenu" class="fixed top-16 left-0 w-64 h-full bg-gray-100 dark:bg-[#27374d] text-gray-900 dark:text-white shadow-2xl z-40 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out overflow-y-auto">
-  <ul class="flex flex-col mt-4 space-y-1">
+<!-- ================= SIDEBAR ================= -->
+<aside id="sidebarMenu"
+  class="fixed top-16 left-0 w-64 h-full bg-gray-100 dark:bg-[#27374d]
+         shadow-2xl z-40 transform -translate-x-full md:translate-x-0
+         transition-transform duration-300 overflow-y-auto">
+
+  <ul class="mt-4 space-y-1 px-2">
+
+    <!-- COMMON SIDEBAR STYLE -->
+    {% comment %} 
+    Light mode: bg-blue-200 / hover bg-blue-200
+    Dark mode: bg-[#3a506b]
+    {% endcomment %}
 
     <!-- Dashboard -->
     <li>
-      <a href="{% url 'soildata:dashboard' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'dashboard' %}bg-[#3a506b] font-semibold{% endif %}">
-        <i class="fa fa-tachometer-alt text-blue-300"></i> Dashboard
+      <a href="{% url 'soildata:dashboard' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}">
+        <i class="fa fa-tachometer-alt text-blue-500"></i> Dashboard
       </a>
     </li>
 
     <!-- Soil Moisture -->
     <li>
-      <a href="{% url 'soildata:soil_moisture' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'soil_moisture' %}bg-[#3a506b] font-semibold{% endif %}">
-        <i class="fa fa-leaf text-green-400"></i> Soil Moisture
+      <a href="{% url 'soildata:soil_moisture' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'soil_moisture' %}active{% endif %}">
+        <i class="fa fa-leaf text-green-500"></i> Soil Moisture
       </a>
     </li>
 
     <!-- Alerts -->
     <li>
-      <a href="{% url 'soildata:alerts' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'alerts' %}bg-[#3a506b] font-semibold{% endif %}">
+      <a href="{% url 'soildata:alerts' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'alerts' %}active{% endif %}">
         <i class="fa fa-bell text-yellow-400"></i> Alerts
       </a>
     </li>
 
     <!-- Soil Analyzer -->
     <li>
-      <a href="{% url 'soilvision:soil_upload' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'soil_upload' %}bg-[#3a506b] font-semibold{% endif %}">
+      <a href="{% url 'soilvision:soil_upload' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'soil_upload' %}active{% endif %}">
         <i class="fa fa-seedling text-green-500"></i> Soil Analyzer
       </a>
     </li>
 
-
-
     <!-- Crop Advisor -->
     <li>
-      <a href="{% url 'soildata:crop_advisor' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'crop_advisor' %}bg-[#3a506b] font-semibold{% endif %}">
-        <i class="fa-solid fa-lightbulb text-green-500 dark:text-green-300"></i> Crop Advisor
+      <a href="{% url 'soildata:crop_advisor' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'crop_advisor' %}active{% endif %}">
+        <i class="fa fa-lightbulb text-green-400"></i> Crop Advisor
       </a>
     </li>
 
     <!-- ChatBot -->
     <li>
-      <a href="{% url 'chat_new' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'chat_new' %}bg-[#3a506b] font-semibold{% endif %}">
+      <a href="{% url 'chat_new' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'chat_new' %}active{% endif %}">
         <i class="fa fa-comments text-pink-500"></i> ChatBot
       </a>
     </li>
 
     <!-- Settings -->
     <li>
-      <a href="{% url 'account:settingpage' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'settingpage' %}bg-[#3a506b] font-semibold{% endif %}">
+      <a href="{% url 'account:settingpage' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'settingpage' %}active{% endif %}">
         <i class="fa fa-cog text-gray-500"></i> Settings
       </a>
     </li>
 
     <!-- Profile -->
     <li>
-      <a href="{% url 'account:profilepage' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg transition-all hover:bg-[#3a506b] {% if request.resolver_match.url_name == 'profilepage' %}bg-[#3a506b] font-semibold{% endif %}">
+      <a href="{% url 'account:profilepage' %}"
+         class="sidebar-link {% if request.resolver_match.url_name == 'profilepage' %}active{% endif %}">
         <i class="fa fa-user text-gray-500"></i> Profile
       </a>
     </li>
 
     <!-- Logout -->
     <li>
-      <a href="{% url 'account:logout' %}" class="flex items-center gap-3 px-5 py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white transition-all">
+      <a href="{% url 'account:logout' %}"
+         class="flex items-center gap-3 px-5 py-3 rounded-lg
+                bg-red-500 hover:bg-red-600 text-white transition-all">
         <i class="fa fa-sign-out-alt"></i> Logout
       </a>
     </li>
@@ -118,77 +154,56 @@
   </ul>
 </aside>
 
-<!-- Scripts -->
+<!-- ================= SIDEBAR STYLES ================= -->
+<style>
+  .sidebar-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:12px 20px;
+    border-radius:10px;
+    transition:all .2s ease;
+  }
+  .sidebar-link:hover{
+    background:#bfdbfe; /* blue-200 */
+  }
+  .dark .sidebar-link:hover{
+    background:#3a506b;
+  }
+  .sidebar-link.active{
+    background:#bfdbfe;
+    font-weight:600;
+  }
+  .dark .sidebar-link.active{
+    background:#3a506b;
+  }
+</style>
+
+<!-- ================= SCRIPTS ================= -->
 <script>
-  // ------------------------
-  // Dark / Light Mode Toggle
-  // ------------------------
   const html = document.documentElement;
-  const themeToggle = document.getElementById('themeToggle');
-  const themeIcon = document.getElementById('themeIcon');
+  const themeToggle = document.getElementById("themeToggle");
+  const themeIcon = document.getElementById("themeIcon");
+  const sidebar = document.getElementById("sidebarMenu");
+  const mobileBtn = document.getElementById("mobileMenuBtn");
 
-  // Initialize theme from localStorage
-  if(localStorage.theme === 'dark') html.classList.add('dark');
-  updateThemeIcon();
+  if(localStorage.theme === "dark") html.classList.add("dark");
+  updateIcon();
 
-  function updateThemeIcon(){
-    if(themeIcon){ // only if icon exists
-      if(html.classList.contains('dark')){
-        themeIcon.classList.replace('fa-sun', 'fa-moon');
-      } else {
-        themeIcon.classList.replace('fa-moon', 'fa-sun');
-      }
-    }
+  function updateIcon(){
+    themeIcon.className = html.classList.contains("dark")
+      ? "fas fa-moon text-yellow-300"
+      : "fas fa-sun text-yellow-400";
   }
 
-  function toggleTheme(){
-    html.classList.toggle('dark');
-    localStorage.theme = html.classList.contains('dark') ? 'dark' : 'light';
-    updateThemeIcon();
-  }
+  themeToggle.onclick = () => {
+    html.classList.toggle("dark");
+    localStorage.theme = html.classList.contains("dark") ? "dark" : "light";
+    updateIcon();
+  };
 
-  if(themeToggle){
-    themeToggle.addEventListener('click', toggleTheme);
-  }
-
-  // ------------------------
-  // Mobile Sidebar Toggle
-  // ------------------------
-  const mobileBtn = document.getElementById('mobileMenuBtn');
-  const sidebar = document.getElementById('sidebarMenu');
-
-  if(mobileBtn && sidebar){
-    mobileBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('-translate-x-full');
-    });
-  }
-
-  // ------------------------
-  // Optional: Close sidebar on outside click (mobile)
-  // ------------------------
-  document.addEventListener('click', (e) => {
-    if(window.innerWidth < 768){ // only mobile
-      if(sidebar && !sidebar.contains(e.target) && !mobileBtn.contains(e.target)){
-        if(!sidebar.classList.contains('-translate-x-full')){
-          sidebar.classList.add('-translate-x-full');
-        }
-      }
-    }
-  });
-
-  // ------------------------
-  // Optional: Close sidebar on link click (mobile)
-  // ------------------------
-  const sidebarLinks = sidebar ? sidebar.querySelectorAll('a') : [];
-  sidebarLinks.forEach(link => {
-    link.addEventListener('click', () => {
-      if(window.innerWidth < 768 && sidebar){
-        sidebar.classList.add('-translate-x-full');
-      }
-    });
-  });
+  mobileBtn.onclick = () => sidebar.classList.toggle("-translate-x-full");
 </script>
-
 
 </body>
 </html>
