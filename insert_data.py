@@ -2,67 +2,61 @@ import os
 import django
 import random
 
-# ---------------- Django setup ----------------
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "soilcore.settings")
 django.setup()
 
-from soilcore.models import SoilType  
+from soilcore.models import SoilType
 
-# ---------------- Helper Data ----------------
-soil_names = ["Sandy Soil", "Clay Soil", "Loamy Soil", "Peaty Soil", "Chalky Soil", "Silty Soil",
-              "Alluvial Soil", "Red Soil", "Black Soil", "Laterite Soil", "Mountain Soil",
-              "Volcanic Soil", "Saline Soil", "Desert Soil", "Floodplain Soil", "Podzol Soil",
-              "Regosol", "Ferrallitic Soil", "Brown Earth", "Forest Soil", "Wetland Soil",
-              "Urban Soil", "Tropical Soil", "Subtropical Soil", "Temperate Soil", "Alpine Soil",
-              "Marsh Soil", "Clay Loam", "Silty Clay", "Peaty Loam", "Loamy Sand", "Sand Loam",
-              "Organic Soil", "Calcareous Soil", "Acid Soil", "Basic Soil", "Iron-rich Soil",
-              "Manganese-rich Soil", "Gravelly Soil", "Stony Soil", "Waterlogged Soil",
-              "Aerated Soil", "Compact Soil", "Nutritious Soil", "Poor Soil", "Humus-rich Soil",
-              "Mineral Soil", "Rocky Soil", "Loess Soil", "Mixed Soil", "Artificial Soil"]
+# Real soil names in Bangladesh
+base_soil_names = [
+    "Alluvial Soil", "Red Soil", "Laterite Soil", "Peaty Soil", "Saline Soil",
+    "Sandy Soil", "Clay Soil", "Loamy Soil", "Black Soil", "Silty Soil"
+]
 
-descriptions = ["Light and drains water quickly, ideal for root crops.",
-                "Heavy soil, retains moisture, challenging to plow.",
-                "Fertile and well-balanced for most crops.",
-                "Acidic soil, rich in organic matter, supports forest growth.",
-                "Alkaline soil, low in nutrients, needs fertilization.",
-                "Smooth and fine-textured soil, excellent for vegetables.",
-                "Rich in minerals and nutrients, ideal for agriculture.",
-                "Red soil, low fertility, suitable for drought-resistant crops.",
-                "Dark soil with high moisture retention, good for rice and sugarcane.",
-                "High iron content, slightly acidic.",
-                "Loamy soil, balanced texture for horticulture.",
-                "Silty soil, retains water but drains slowly.",
-                "Peaty soil, high organic matter, acidic.",
-                "Saline soil, requires treatment before planting.",
-                "Volcanic soil, very fertile, supports tropical crops.",
-                "Mountain soil, shallow and rocky, good for pasture.",
-                "Floodplain soil, fertile but seasonally flooded.",
-                "Podzol soil, acidic, supports conifer forests.",
-                "Urban soil, mixed with construction debris, disturbed.",
-                "Wetland soil, waterlogged, suitable for aquatic plants."]
+# Sample crops in Bangladesh
+bangladesh_crops = [
+    "Rice", "Wheat", "Maize", "Jute", "Sugarcane", "Potato", "Tomato", "Onion",
+    "Chili", "Cabbage", "Spinach", "Lettuce", "Pumpkin", "Brinjal", "Mustard",
+    "Lentil", "Chickpea", "Soybean", "Banana", "Papaya", "Guava", "Mango",
+    "Jackfruit", "Coconut", "Betel Leaf", "Watermelon", "Cucumber", "Radish",
+    "Carrot", "Garlic", "Cauliflower", "Bitter Gourd", "Snake Gourd", "Ridge Gourd",
+    "Bottle Gourd", "Pointed Gourd", "Taro", "Sweet Potato", "Colocasia",
+    "Spinach (Amaranth)", "Kohlrabi", "Fenugreek", "Celery", "Beetroot", "Turnip",
+    "Okra", "Field Bean", "Green Gram", "Black Gram", "Mung Bean", "Cowpea",
+    "Sesame", "Sunflower", "Groundnut", "Pumpkin (Local)", "Tomato (Local)",
+    "Brinjal (Local)", "Chili (Local)"
+]
 
-crops = ["Rice","Wheat","Maize","Barley","Oats","Potato","Carrot","Tomato","Onion",
-         "Pepper","Cabbage","Spinach","Lettuce","Sugarcane","Cotton","Soybean","Peanut",
-         "Millet","Coffee","Cocoa","Tea","Banana","Pineapple","Apple","Orange","Mango",
-         "Papaya","Guava","Avocado","Cherry","Plum","Peach","Olive","Date Palm","Coconut",
-         "Rubber Tree","Eucalyptus","Teak","Mahogany","Bamboo","Maple","Oak","Pine","Fir",
-         "Spruce","Chestnut","Walnut","Almond","Cashew","Lychee","Jackfruit","Durian"]
+# Create 1000 SoilType entries using real soil names
+for i in range(1, 1001):
+    soil_name = random.choice(base_soil_names)
+    ph_min = round(random.uniform(4.5, 7.0), 1)
+    ph_max = round(random.uniform(ph_min + 0.5, 8.5), 1)
+    moisture_min = round(random.uniform(15, 50), 1)
+    moisture_max = round(random.uniform(moisture_min + 10, 80), 1)
+    temp_min = round(random.uniform(10, 30), 1)
+    temp_max = round(random.uniform(temp_min + 5, 45), 1)
+    humidity_min = round(random.uniform(30, 60), 1)
+    humidity_max = round(random.uniform(humidity_min + 10, 95), 1)
+    salinity_min = round(random.uniform(0.0, 1.0), 1)
+    salinity_max = round(random.uniform(salinity_min + 0.1, 2.0), 1)
 
-locations = ["Rural areas", "Riverbanks", "Hilly regions", "Coastal areas", "Plains", "Valleys",
-             "Desert edges", "Forest clearings", "Urban farms", "Wetlands", "Floodplains",
-             "Mountain slopes", "Plateaus", "Volcanic regions", "River deltas", "Mangrove areas",
-             "Grasslands", "Agricultural belts", "Tea estates", "Plantation areas", "Orchards",
-             "Botanical gardens", "Community farms", "Reclaimed land", "National parks"]
+    # Pick 5–15 random crops for each soil type
+    crops = ", ".join(random.sample(bangladesh_crops, random.randint(5, 15)))
 
-# ---------------- Insert 1000 rows ----------------
-for _ in range(1000):
     SoilType.objects.create(
-        name=random.choice(soil_names),
-        description=random.choice(descriptions),
-        suitable_crops=", ".join(random.sample(crops, 3)),
-        location=random.choice(locations),
-        ph_min=round(random.uniform(4.5, 6.5), 1),
-        ph_max=round(random.uniform(6.6, 8.5), 1)
+        name=f"{soil_name}",  # Real soil name + unique number
+        ph_min=ph_min,
+        ph_max=ph_max,
+        moisture_min=moisture_min,
+        moisture_max=moisture_max,
+        temp_min=temp_min,
+        temp_max=temp_max,
+        humidity_min=humidity_min,
+        humidity_max=humidity_max,
+        salinity_min=salinity_min,
+        salinity_max=salinity_max,
+        crops=crops
     )
 
-print("SoilType records inserted successfully!")
+print("✅ 1000 real SoilType entries added successfully!")

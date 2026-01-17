@@ -1,16 +1,11 @@
 import sqlite3
-import os
 
-
-db_path = os.path.join(os.getcwd(), "db.sqlite3")
-
-
-conn = sqlite3.connect(db_path)
+conn = sqlite3.connect("db.sqlite3")
 cursor = conn.cursor()
 
-
-cursor.execute("DROP TABLE IF EXISTS SoilData;")
+# drop table
+cursor.execute("DROP TABLE IF EXISTS soilcore_newsletter;")
 conn.commit()
 conn.close()
 
-print("Table 'SoilData' removed successfully!")
+print("✅ Table 'soilcore_newsletter' removed successfully!")

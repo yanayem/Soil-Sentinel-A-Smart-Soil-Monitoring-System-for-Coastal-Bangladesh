@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crop Prediction</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: "class" }
+  </script>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-all duration-500">
+
+  <div class="mt-12 min-h-screen flex flex-col items-center p-4">
+
+    <h1 class="text-4xl font-bold mb-6 text-green-600 dark:text-green-400">🌾 Crop Prediction</h1>
+
+    <!-- Prediction Form -->
+    <form method="POST" enctype="multipart/form-data"
+      class="bg-white dark:bg-gray-800 shadow-lg rounded-xl p-6 flex flex-col space-y-4 w-full max-w-md">
+      {% csrf_token %}
+      <input type="number" name="ph" step="0.1" placeholder="Soil pH" class="input-field" required>
+      <input type="number" name="moisture" step="0.1" placeholder="Soil Moisture (%)" class="input-field" required>
+      <input type="number" name="temp" step="0.1" placeholder="Temperature (°C)" class="input-field" required>
+      <input type="number" name="humidity" step="0.1" placeholder="Humidity (%)" class="input-field" required>
+      <input type="number" name="salinity" step="0.1" placeholder="Salinity" class="input-field" required>
+      <input type="file" name="image" accept="image/*" class="file-input">
+
+      <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-all">Predict</button>
+    </form>
+
+    <!-- Display Error -->
+    {% if error %}
+      <p class="mt-4 text-red-600 font-medium">{{ error }}</p>
+    {% endif %}
+
+    <!-- Prediction Result -->
+    {% if prediction %}
+    <div class="mt-6 w-full max-w-md p-6 bg-green-100 dark:bg-green-800 rounded-xl shadow-lg">
+      <h2 class="text-xl font-semibold mb-2">Predicted Crops:</h2>
+
+      <!-- Fixed text color logic -->
+      <p class="mb-2 text-lg font-medium
+        {% if prediction.predicted_crops == 'No crops predicted' %}
+          text-red-600
+        {% else %}
+          text-green-800
+        {% endif %}
+      ">
+        {{ prediction.predicted_crops }}
+      </p>
+
+      {% if prediction.image %}
+      <img src="{{ prediction.image.url }}" alt="Soil Image" class="w-full rounded-md mt-2">
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Last 10 Predictions Table -->
+    {% if last_predictions %}
+    <div class="mt-8 w-full max-w-4xl overflow-x-auto">
+      <h2 class="text-2xl font-semibold mb-4">📋 Last 10 Predictions</h2>
+      <table class="w-full table-auto bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
+        <thead>
+          <tr class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+            <th class="px-4 py-2">#</th>
+            <th class="px-4 py-2">Date</th>
+            <th class="px-4 py-2">Crops</th>
+            <th class="px-4 py-2">pH</th>
+            <th class="px-4 py-2">Moisture</th>
+            <th class="px-4 py-2">Temp</th>
+            <th class="px-4 py-2">Humidity</th>
+            <th class="px-4 py-2">Salinity</th>
+            <th class="px-4 py-2">Image</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in last_predictions %}
+          <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition">
+            <td class="px-4 py-2">{{ forloop.counter }}</td>
+            <td class="px-4 py-2">{{ p.created_at|date:"M d, Y H:i" }}</td>
+            <td class="px-4 py-2">{{ p.predicted_crops }}</td>
+            <td class="px-4 py-2">{{ p.ph }}</td>
+            <td class="px-4 py-2">{{ p.moisture }}</td>
+            <td class="px-4 py-2">{{ p.temp }}</td>
+            <td class="px-4 py-2">{{ p.humidity }}</td>
+            <td class="px-4 py-2">{{ p.salinity }}</td>
+            <td class="px-4 py-2">
+              {% if p.image %}
+              <img src="{{ p.image.url }}" class="w-16 h-16 rounded-md object-cover">
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+  </div>
+
+  <style>
+    .input-field { padding: 0.5rem; border-radius: 0.5rem; border: 1px solid #ccc; width: 100%; }
+    .file-input { padding: 0.5rem; border-radius: 0.5rem; border: 1px dashed #888; width: 100%; }
+  </style>
+
+</body>
+</html>

@@ -1,58 +1,133 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Soil Moisture Alerts</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-    />
-  </head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Soil Moisture Alerts | Soil Monitor</title>
 
-  <body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen flex items-center justify-center p-6">
-    <div class="max-w-5xl w-full">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2563eb',       // blue-600
+            primarySoft: '#dbeafe',   // blue-100
+            success: '#16a34a',       // green-600
+            warning: '#facc15',       // yellow-400
+            danger: '#dc2626',        // red-600
+          },
+          animation: {
+            pulseSoft: 'pulse 2s infinite'
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body class="transition-colors duration-500 bg-blue-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 min-h-screen p-6">
+
+  <!-- Alerts Container -->
+  <div class="max-w-5xl w-full mx-auto space-y-6">
+
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-4">
+      <h1 class="text-3xl font-bold text-primary dark:text-blue-400 flex items-center gap-2">
+        <i class="fa fa-bell"></i> Soil Alerts
+      </h1>
+      <p class="text-sm text-gray-500 dark:text-gray-400">Auto-updating every 15s</p>
+    </div>
+
+    <!-- Table -->
+    <div id="alerts-container" class="overflow-x-auto rounded-2xl shadow-md transition">
+
       {% if alerts %}
-      <div class="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-6 overflow-x-auto hover:shadow-xl transition">
-        <h1 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">
-          🌾 Soil Moisture Alerts
-        </h1>
-        <table class="w-full table-auto border-collapse text-gray-700 dark:text-gray-200">
-          <thead>
-            <tr class="bg-gray-100 dark:bg-gray-700">
-              <th class="px-4 py-2 text-left">Time</th>
-              <th class="px-4 py-2 text-left">Moisture (%)</th>
-              <th class="px-4 py-2 text-left">Type</th>
-              <th class="px-4 py-2 text-left">Message</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for alert in alerts %}
-            <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition">
-              <td class="px-4 py-2">{{ alert.time }}</td>
-              <td class="px-4 py-2">{{ alert.moisture }}</td>
-              <td class="px-4 py-2">
-                {% if alert.type == "Low Moisture" %}
-                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs">Low</span>
-                {% elif alert.type == "High Moisture" %}
-                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs">High</span>
-                {% else %}
-                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs">Normal</span>
-                {% endif %}
-              </td>
-              <td class="px-4 py-2">{{ alert.message }}</td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-primarySoft dark:bg-gray-800">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-primary dark:text-blue-300 uppercase tracking-wider">Time</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-primary dark:text-blue-300 uppercase tracking-wider">Moisture (%)</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-primary dark:text-blue-300 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-primary dark:text-blue-300 uppercase tracking-wider">Message</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+          {% for alert in alerts %}
+          <tr class="alert-item hover:bg-blue-100 dark:hover:bg-gray-800 transition animate-slideIn">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ alert.time }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ alert.moisture }}%</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              {% if alert.type == "Low Moisture" %}
+              <span class="bg-danger text-white px-3 py-1 rounded-full text-xs animate-pulseSoft">Low</span>
+              {% elif alert.type == "High Moisture" %}
+              <span class="bg-warning text-white px-3 py-1 rounded-full text-xs animate-pulseSoft">High</span>
+              {% else %}
+              <span class="bg-success text-white px-3 py-1 rounded-full text-xs">Normal</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ alert.message }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
       {% else %}
-      <div class="bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 p-6 rounded-lg shadow-lg text-center">
-        <i class="fa fa-check-circle text-4xl mb-3"></i>
-        <p class="text-xl font-semibold">All readings are normal.</p>
+      <div class="p-6 text-center rounded-2xl shadow-md bg-primarySoft dark:bg-gray-800 text-primary dark:text-blue-300">
+        <i class="fa fa-check-circle text-4xl mb-2"></i>
+        <p class="text-xl font-semibold">All readings are normal</p>
       </div>
       {% endif %}
+
     </div>
-  </body>
+  </div>
+
+  <!-- Alert Sound -->
+  <audio id="alertSound">
+    <source src="https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+    // --------- Always Default Light Mode ----------
+    (function() {
+      document.documentElement.classList.remove('dark');
+      localStorage.theme = 'light';
+    })();
+
+    // --------- Auto-refresh every 15s with sound ----------
+    let lastAlertCount = {{ alerts|length }};
+    setInterval(() => {
+      $.get("{% url 'soildata:alerts' %}?ajax=1", function(data) {
+        const newContent = $(data).find('#alerts-container').html();
+        const newCount = $(newContent).find('.alert-item').length;
+
+        if (newCount > lastAlertCount) {
+          document.getElementById("alertSound").play();
+        }
+        lastAlertCount = newCount;
+
+        $("#alerts-container").html(newContent);
+      });
+    }, 15000);
+  </script>
+
+  <!-- Animations -->
+  <style>
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-slideIn { animation: slideIn 0.5s ease-out; }
+    .animate-pulseSoft { animation: pulse 2s infinite; }
+  </style>
+
+</body>
 </html>
