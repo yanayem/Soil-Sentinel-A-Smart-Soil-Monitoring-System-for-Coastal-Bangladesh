@@ -64,13 +64,6 @@
             <td class="px-4 py-2 font-medium">{{ p.predicted_soil_type }}</td>
             <td class="px-4 py-2">
               {{ p.confidence|floatformat:2 }}%
-              {% if p.confidence|floatformat:2 >= 80 %}
-                <span class="bg-green-500 text-white px-2 py-1 rounded-full text-xs ml-2">High</span>
-              {% elif p.confidence|floatformat:2 >= 50 %}
-                <span class="bg-yellow-500 text-white px-2 py-1 rounded-full text-xs ml-2">Medium</span>
-              {% else %}
-                <span class="bg-red-500 text-white px-2 py-1 rounded-full text-xs ml-2">Low</span>
-              {% endif %}
             </td>
             <td class="px-4 py-2">
               <img src="{{ p.image.url }}" alt="Soil Image" class="w-16 h-16 rounded-md object-cover shadow-sm">
