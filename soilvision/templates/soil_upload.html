@@ -13,7 +13,7 @@
 <body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-all duration-500">
   {% include "sidebar.html" %}
 
-<div class="mt-24 min-h-screen flex flex-col items-center justify-start p-4 space-y-6">
+<div class="mt-24 md:ml-64 min-h-screen flex flex-col items-center justify-start p-4 space-y-6">
 
   <!-- Header -->
   <h1 class="text-4xl font-bold animate-pulse text-green-600 dark:text-green-400">🌱 SoilVision</h1>
@@ -46,27 +46,27 @@
   <div class="mt-8 w-full max-w-3xl">
     <h2 class="text-2xl font-semibold mb-4 text-gray-800 dark:text-gray-100">📋 Last 10 Predictions</h2>
     <div class="overflow-x-auto shadow-md rounded-xl">
-      <table class="min-w-full bg-white dark:bg-gray-800 rounded-xl">
-        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100">
+      <table class="min-w-full bg-white dark:bg-gray-800 rounded-xl text-xs md:text-sm">
+        <thead class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200 uppercase tracking-wider text-[10px] md:text-xs">
           <tr>
-            <th class="px-4 py-2 text-left">#</th>
-            <th class="px-4 py-2 text-left">Time</th>
-            <th class="px-4 py-2 text-left">Soil Type</th>
-            <th class="px-4 py-2 text-left">Confidence</th>
-            <th class="px-4 py-2 text-left">Image</th>
+            <th class="px-2 py-3 md:px-4 text-left font-semibold">#</th>
+            <th class="px-2 py-3 md:px-4 text-left font-semibold">Time</th>
+            <th class="px-2 py-3 md:px-4 text-left font-semibold">Soil Type</th>
+            <th class="px-2 py-3 md:px-4 text-left font-semibold">Confidence</th>
+            <th class="px-2 py-3 md:px-4 text-left font-semibold">Image</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
           {% for p in last_predictions %}
-          <tr class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition">
-            <td class="px-4 py-2">{{ forloop.counter }}</td>
-            <td class="px-4 py-2">{{ p.created_at|date:"M d, Y H:i" }}</td>
-            <td class="px-4 py-2 font-medium">{{ p.predicted_soil_type }}</td>
-            <td class="px-4 py-2">
+          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition">
+            <td class="px-2 py-3 md:px-4">{{ forloop.counter }}</td>
+            <td class="px-2 py-3 md:px-4 whitespace-nowrap">{{ p.created_at|date:"M d, Y H:i" }}</td>
+            <td class="px-2 py-3 md:px-4 font-medium">{{ p.predicted_soil_type }}</td>
+            <td class="px-2 py-3 md:px-4 whitespace-nowrap">
               {{ p.confidence|floatformat:2 }}%
             </td>
-            <td class="px-4 py-2">
-              <img src="{{ p.image.url }}" alt="Soil Image" class="w-16 h-16 rounded-md object-cover shadow-sm">
+            <td class="px-2 py-3 md:px-4">
+              <img src="{{ p.image.url }}" alt="Soil Image" class="w-12 h-12 md:w-16 md:h-16 rounded-md object-cover shadow-sm">
             </td>
           </tr>
           {% endfor %}

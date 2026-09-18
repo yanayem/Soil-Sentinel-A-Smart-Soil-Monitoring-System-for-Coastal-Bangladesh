@@ -44,43 +44,32 @@
 
 <body class="bg-gray-50 dark:bg-gray-900 text-black dark:text-white h-screen overflow-hidden">
 
-  <div class="flex h-full">
+  {% include 'sidebar.html' %}
 
-    <!-- Left Sidebar -->
-    <div class="hidden md:flex flex-col w-64 h-full">
-      {% include 'sidebar.html' %}
-    </div>
+  <div class="flex h-full md:pl-64 pt-16">
 
     <!-- Chat Area -->
-    <div class="flex-1 flex flex-col relative max-w-[900px] mx-auto">
+    <div class="flex-1 flex flex-col relative max-w-[900px] mx-auto w-full">
 
       <!-- Header -->
-      <header class="fixed md:top-16 left-0 right-0 md:left-64 md:right-72 
-        bg-white dark:bg-gray-800 z-30 p-4 flex justify-between items-center shadow">
+      <header class="fixed top-16 left-0 right-0 md:left-64 md:right-72
+        bg-white dark:bg-gray-800 z-30 px-3 py-3 md:p-4 flex justify-between items-center shadow border-b border-gray-200 dark:border-gray-700">
 
         <div class="flex items-center gap-2">
-          <h1 class="font-bold text-xl">Soil Expert Chat</h1>
-
-          <button class="lg:hidden px-2 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-            <a href="{% url 'soildata:dashboard' %}">Back</a>
-          </button>
+          <h1 class="font-bold text-sm md:text-xl whitespace-nowrap">Soil AI Expert</h1>
         </div>
 
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 md:gap-2">
           
           <!-- Mobile history toggle -->
-          <button id="toggle-history" class="md:hidden px-2 py-1 
-            bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">
-            <i class="fa fa-history"></i>
+          <button id="toggle-history" class="md:hidden p-2 text-sm bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg">
+            <i class="fas fa-history"></i>
           </button>
 
-          <!-- Theme toggle -->
-          <button id="theme-toggle" class="md:hidden px-3 py-1 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600">
-            🌞
-          </button>
+          <!-- Removed redundant theme toggle from here as it's already in the top bar -->
 
           <!-- New Chat -->
-          <button id="new-chat" class="px-3 py-1 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded">
+          <button id="new-chat" class="px-2 md:px-3 py-1.5 text-xs md:text-sm bg-blue-600 text-white font-medium hover:bg-blue-700 rounded-lg shadow-sm transition">
             New Chat
           </button>
         </div>
@@ -126,12 +115,16 @@
     </div>
 
     <!-- Right History Panel -->
-    <div id="chat-history" class="hidden md:flex flex-col w-72 
-      bg-gray-100 dark:bg-gray-800 p-4 overflow-y-auto h-full">
+    <div id="chat-history" class="hidden md:flex flex-col w-full md:w-72
+      bg-white dark:bg-gray-800 p-4 overflow-y-auto h-full border-l border-gray-200 dark:border-gray-700
+      fixed inset-0 z-[70] md:static">
 
-      <h2 class="font-bold mb-4 text-lg flex items-center gap-2">
-        <i class="fa fa-history"></i> Chat History
-      </h2>
+      <div class="flex justify-between items-center mb-6 md:mb-4">
+        <h2 class="font-bold text-lg flex items-center gap-2">
+          <i class="fas fa-history text-blue-500"></i> Chat History
+        </h2>
+        <button id="close-history" class="md:hidden text-2xl text-gray-500">&times;</button>
+      </div>
 
       <ul class="space-y-2">
         {% for session_item in history %}
@@ -160,40 +153,46 @@
     const themeBtn = document.getElementById("theme-toggle");
 
     function updateThemeIcon() {
-        if (document.documentElement.classList.contains("dark")) {
-            themeBtn.textContent = "🌙"; 
-        } else {
-            themeBtn.textContent = "🌞"; 
+        if (themeBtn) {
+            if (document.documentElement.classList.contains("dark")) {
+                themeBtn.textContent = "🌙";
+            } else {
+                themeBtn.textContent = "🌞";
+            }
         }
     }
 
     updateThemeIcon();
 
-    themeBtn.addEventListener("click", () => {
-        document.documentElement.classList.toggle("dark");
+    if (themeBtn) {
+        themeBtn.addEventListener("click", () => {
+            document.documentElement.classList.toggle("dark");
 
-        if (document.documentElement.classList.contains("dark")) {
-            localStorage.setItem("theme", "dark");
-        } else {
-            localStorage.setItem("theme", "light");
-        }
+            if (document.documentElement.classList.contains("dark")) {
+                localStorage.setItem("theme", "dark");
+            } else {
+                localStorage.setItem("theme", "light");
+            }
 
-        updateThemeIcon();
-    });
+            updateThemeIcon();
+        });
+    }
 
     // -------------------------------
     // MOBILE HISTORY TOGGLE
     // -------------------------------
     const historyBox = document.getElementById("chat-history");
+    const toggleHistory = document.getElementById("toggle-history");
+    const closeHistory = document.getElementById("close-history");
 
-    document.getElementById("toggle-history").addEventListener("click", () => {
-      if (historyBox.classList.contains("hidden")) {
-        historyBox.classList.remove("hidden");
-        historyBox.classList.add("flex");
-      } else {
+    toggleHistory.addEventListener("click", () => {
+        historyBox.classList.toggle("hidden");
+        historyBox.classList.toggle("flex");
+    });
+
+    closeHistory.addEventListener("click", () => {
         historyBox.classList.add("hidden");
         historyBox.classList.remove("flex");
-      }
     });
 
     // -------------------------------
