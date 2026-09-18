@@ -1,27 +1,10 @@
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = { darkMode: "class" };
-  </script>
-
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-</head>
-
-<body class="bg-white dark:bg-gray-900 dark:text-white">
-
 <!-- ========================================================= -->
 <!-- MODERN SMART FOOTER -->
 <!-- ========================================================= -->
 <footer class="w-full bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-300 py-12 relative overflow-hidden">
 
-  <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+  <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
 
     <!-- LOGO + SOCIAL -->
     <div class="space-y-4">
@@ -52,13 +35,13 @@
     <!-- CONTACT / ADDRESS -->
     <div class="space-y-4">
       <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Contact</h4>
-      <p class="text-gray-600 dark:text-gray-400">Email: soilmonitor2025@gmail.com</p>
-      <p class="text-gray-600 dark:text-gray-400">Phone: +880 1780 123456</p>
-      <p class="text-gray-600 dark:text-gray-400">Dhaka, Bangladesh</p>
+      <p class="text-gray-600 dark:text-gray-400 text-sm">Email: soilmonitor2025@gmail.com</p>
+      <p class="text-gray-600 dark:text-gray-400 text-sm">Phone: +880 1780 123456</p>
+      <p class="text-gray-600 dark:text-gray-400 text-sm">Dhaka, Bangladesh</p>
     </div>
 
     <!-- NEWSLETTER -->
-    <div class="space-y-4 col-span-2 md:col-span-1">
+    <div class="space-y-4">
       <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Newsletter</h4>
       <p class="text-gray-600 dark:text-gray-400">Subscribe to get updates about soil monitoring alerts and tips.</p>
 
@@ -73,6 +56,16 @@
           Subscribe
         </button>
       </form>
+    </div>
+
+    <!-- LINKS (Optional, added for better layout) -->
+    <div class="space-y-4">
+      <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Quick Links</h4>
+      <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+        <li><a href="{% url 'homepage' %}" class="hover:text-blue-500 transition">Home</a></li>
+        <li><a href="{% url 'aboutpage' %}" class="hover:text-blue-500 transition">About Us</a></li>
+        <li><a href="{% url 'terms_privacy' %}" class="hover:text-blue-500 transition">Privacy Policy</a></li>
+      </ul>
     </div>
 
   </div>
@@ -90,19 +83,21 @@
 <!-- TOAST (Optional Django Messages) -->
 <div id="newsletter-toast"
      class="fixed bottom-6 right-6 bg-green-600 text-white px-4 py-2 rounded-md shadow-md
-            opacity-0 transition-all"></div>
+            z-50 opacity-0 transition-all pointer-events-none"></div>
 
 <script>
-  const toast = document.getElementById("newsletter-toast");
-
-  {% if messages %}
-    {% for message in messages %}
-      toast.textContent = "{{ message }}";
-      toast.classList.add("opacity-100");
-      setTimeout(() => toast.classList.remove("opacity-100"), 3000);
-    {% endfor %}
-  {% endif %}
+  (function() {
+    const toast = document.getElementById("newsletter-toast");
+    {% if messages %}
+      {% for message in messages %}
+        toast.textContent = "{{ message }}";
+        toast.classList.remove("opacity-0");
+        toast.classList.add("opacity-100");
+        setTimeout(() => {
+          toast.classList.remove("opacity-100");
+          toast.classList.add("opacity-0");
+        }, 3000);
+      {% endfor %}
+    {% endif %}
+  })();
 </script>
-
-</body>
-</html>
